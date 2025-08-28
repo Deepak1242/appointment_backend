@@ -17,16 +17,16 @@ const User = sequelize.define("User",{
 // !!APPOINTMENT MODEL !!
 
 const Appointment = sequelize.define("Appointment",{
-    startDate : { type : DataTypes.DATE , allowNull : false },
-    endDate : { type : DataTypes.DATE , allowNull : false },
+    start : { type : DataTypes.DATE , allowNull : false },
+    end : { type : DataTypes.DATE , allowNull : false },
     status : { type : DataTypes.ENUM("booked","cancelled"), allowNull : false , defaultValue:"booked"}
 })
 
 // !!AVAILABILITY MODEL !!
 
 const Availability = sequelize.define("Availability",{
-    startDate : { type : DataTypes.DATE , allowNull : false },
-    endDate : { type : DataTypes.DATE , allowNull : false },
+    start : { type : DataTypes.DATE , allowNull : false },
+    end : { type : DataTypes.DATE , allowNull : false },
 })
 
 

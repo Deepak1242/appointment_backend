@@ -56,7 +56,7 @@ const createAppointment = async (req, res) => {
       end: slotEnd
     });
 
-    return res.json({ appointment });
+    return res.status(200).json({ appointment });
   } catch (err) {
     return res.status(500).json({ error: 'Server error', details: err.message });
   }
@@ -71,7 +71,7 @@ const cancelAppointment = async (req, res) => {
   if (String(appt.professorId) !== String(req.user.id)) return res.status(403).json({ error: 'Not your appointment' });
   appt.status = 'cancelled';
   await appt.save();
-  return res.json({ appointment: appt })
+  return res.status(200).json({ appointment: appt })
 
 };
 
@@ -83,7 +83,7 @@ const getAppointment = async (req, res) => {
         where: { studentId: req.user.id, status: 'booked' },
         order: [['start','ASC']]
     });
-    return res.json({ appointments: appts });
+    return res.status(200).json({ appointments: appts });
 }
 
 module.exports = {createAppointment , cancelAppointment , getAppointment}

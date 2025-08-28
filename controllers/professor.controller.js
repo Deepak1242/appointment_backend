@@ -17,7 +17,7 @@ const professorAvailability = async (req, res) => {
       const a = await Availability.create({ professorId: req.user.id, start, end });
       created.push(a);
     }
-    return res.json({ created });
+    return res.status(200).json({ created });
   } catch (err) {
     return res.status(500).json({ error: 'Server error', details: err.message });
   }
@@ -25,8 +25,8 @@ const professorAvailability = async (req, res) => {
 
 
 const professorSlots = async (req, res) => {
-    const avail = await Availability.findAll({ where: { professorId: req.params.profId } });
-    return res.json({ avail });
+    const [avail] = await Availability.findAll({ where: { professorId: req.params.profId } });
+    return res.status(200).json({ avail });
     
 }
 
@@ -55,7 +55,7 @@ const professorAppointments = async (req, res) => {
       available: !occupied
     };
   });
-  return res.json({ slots });
+  return res.status(200).json({ slots });
 }
 
 
