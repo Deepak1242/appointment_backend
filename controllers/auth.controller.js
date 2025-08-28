@@ -1,9 +1,9 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const { User } = require('../models/model.js');
 const { signToken } = require('../middlewares/auth.middleware.js');
 
 
-export const loginController = async(req,res)=>{
+const loginController = async(req,res)=>{
     try{
         const {email , password} = req.body;
 
@@ -20,7 +20,7 @@ export const loginController = async(req,res)=>{
         }
         // !! token creattted //
         const token = signToken(user)
-        return res.status(200).json({token,success : true})
+        return res.status(200).json({token,user,success : true})
 
 
     }catch(error){
@@ -29,7 +29,7 @@ export const loginController = async(req,res)=>{
     }
 }
 
-export const registerController = async(req,res)=>{
+const registerController = async(req,res)=>{
     try{
         const {name , email , password , role} = req.body;
 
@@ -40,7 +40,7 @@ export const registerController = async(req,res)=>{
         const hashedPass = await bcrypt.hash(password , 10)
         const user = await User.create({name , email , password : hashedPass , role})
         const token = signToken(user)
-        return res.status(200).json({token,success : true})
+        return res.status(200).json({token,user,success : true})
     }catch(error){
         console.log("error in register controller......")
         if (error.name === 'SequelizeUniqueConstraintError') return res.status(400).json({ error: 'Email already exists' });
@@ -49,3 +49,4 @@ export const registerController = async(req,res)=>{
 }
     
 
+module.exports = {loginController , registerController}

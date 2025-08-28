@@ -1,13 +1,13 @@
 
 const express = require('express');
-const { Appointment, Availability, User } = require('../models/model.js');
 const { authMiddleware } = require('../middlewares/auth.middleware.js');
-const router = express.Router();
+const Router = express.Router();
+const {createAppointment , cancelAppointment , getAppointment} = require('../controllers/appointment.controller.js');
 
-router.post('/', authMiddleware, async (req, res))
-router.post('/:id/cancel', authMiddleware, async (req, res))
-router.get('/me', authMiddleware, async (req, res))
+Router.post('/', authMiddleware, createAppointment)
+Router.post('/:id/cancel', authMiddleware, cancelAppointment)
+Router.get('/me', authMiddleware, getAppointment)
 
 
 
-module.exports = router;
+module.exports = Router;

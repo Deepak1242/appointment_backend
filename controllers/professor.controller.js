@@ -4,7 +4,7 @@ const { Availability, Appointment, User } = require('../models/model.js');
 const { authMiddleware } = require('../middlewares/auth.middleware.js');
 
 
-export const professorAvailability = async (req, res) => {
+const professorAvailability = async (req, res) => {
   if (req.user.role !== 'professor') return res.status(403).json({ error: 'Only professors' });
   const slots = Array.isArray(req.body) ? req.body : [req.body];
   const created = [];
@@ -23,30 +23,30 @@ export const professorAvailability = async (req, res) => {
   }
 }
 
-//professor fetches available slots for professor (availabilities minus already booked times)
-export const professorSlots = async (req, res) => {
+
+const professorSlots = async (req, res) => {
     const avail = await Availability.findAll({ where: { professorId: req.params.profId } });
     return res.json({ avail });
     
 }
 
-// Student fetches available slots for professor (availabilities minus already booked times)
-export const professorAppointments = async (req, res) => {
+
+const professorAppointments = async (req, res) => {
     const profId = req.params.profId;
-  // Get availabilities
+  
   const availabilities = await Availability.findAll({ where: { professorId: profId }, order: [['start','ASC']] });
-  // Get booked appointments for professor (status booked)
+  
   const appointments = await Appointment.findAll({
     where: { professorId: profId, status: 'booked' }
   });
-  // For simplicity: treat availabilities as independent slots. If an appointment overlaps that slot, mark it unavailable.
+  
   const slots = availabilities.map(a => {
     const aStart = new Date(a.start).getTime();
     const aEnd = new Date(a.end).getTime();
     const occupied = appointments.some(app => {
       const s = new Date(app.start).getTime();
       const e = new Date(app.end).getTime();
-      return !(e <= aStart || s >= aEnd); // overlap
+      return !(e <= aStart || s >= aEnd); 
     });
     return {
       id: a.id,
@@ -59,8 +59,4 @@ export const professorAppointments = async (req, res) => {
 }
 
 
-// Student fetches available slots for professor (availabilities minus already booked times)
-
-
-
-
+module.exports = {professorAvailability , professorSlots , professorAppointments}

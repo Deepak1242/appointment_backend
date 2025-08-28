@@ -1,5 +1,9 @@
 
-export const createAppointment = async (req, res) => {
+const { Appointment , Availability } = require('../models/model.js')
+
+
+const createAppointment = async (req, res) => {
+  
     if (req.user.role !== 'student') return res.status(403).json({ error: 'Only students can book' });
   const { professorId, availabilityId, start, end } = req.body;
   try {
@@ -15,14 +19,14 @@ export const createAppointment = async (req, res) => {
       slotStart = new Date(start); slotEnd = new Date(end);
     }
 
-    // Check availability exists and not already booked (appointments overlapping)
+    
     const overlapping = await Appointment.findOne({
       where: { professorId, status: 'booked',
-        // We'll check overlap in JS below because Sequelize date overlapping is fiddly with sqlite
+       
       }
     });
 
-    // Fetch all existing booked appointments for professor to check conflict
+    
     const booked = await Appointment.findAll({ where: { professorId, status: 'booked' } });
     const s = slotStart.getTime(); const e = slotEnd.getTime();
     const conflict = booked.some(b => {
@@ -32,11 +36,11 @@ export const createAppointment = async (req, res) => {
     });
     if (conflict) return res.status(400).json({ error: 'Slot already booked or overlaps booked appointment' });
 
-    // Also ensure there's a matching availability that fully contains the requested slot
+    
     const availContaining = await Availability.findOne({
       where: { professorId }
     });
-    // check at least one availability that includes the requested interval
+    
     const availList = await Availability.findAll({ where: { professorId } });
     const contains = availList.some(a => {
       const as = new Date(a.start).getTime();
@@ -59,7 +63,7 @@ export const createAppointment = async (req, res) => {
 }
 
 // !!!!!!!--------Professor can cancel appointment hereee......
-export const cancelAppointment = async (req, res) => {
+const cancelAppointment = async (req, res) => {
 
   if (req.user.role !== 'professor') return res.status(403).json({ error: 'Only professors can cancel here' });
   const appt = await Appointment.findByPk(req.params.id);
@@ -73,7 +77,7 @@ export const cancelAppointment = async (req, res) => {
 
 
 /// !!!!!!!--------Student can check therr own appointment hereee......
-export const getAppointment = async (req, res) => {
+const getAppointment = async (req, res) => {
     if (req.user.role !== 'student') return res.status(403).json({ error: 'Only students' });
     const appts = await Appointment.findAll({
         where: { studentId: req.user.id, status: 'booked' },
@@ -81,3 +85,5 @@ export const getAppointment = async (req, res) => {
     });
     return res.json({ appointments: appts });
 }
+
+module.exports = {createAppointment , cancelAppointment , getAppointment}
